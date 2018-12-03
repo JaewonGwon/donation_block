@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.Mapper">
+	
+	<insert id = "insertGiver" parameterType = "vo.Giver">
+	insert into Giver
+		(GIV_ID, GIV_PW, BALANCE)
+	VALUES
+		(#{giv_id}, #{giv_pw}, #{balance})
+	</insert>
+	
+	<select id = "selectGiver" resultType = "vo.Giver">
+	select
+		giv_id
+		,giv_pw
+		,balance
+	from
+		giver
+	</select>
+	
+	<insert id = "insertBlock" parameterType = "vo.Block">
+	INSERT INTO BLOCK(
+	HASH
+		,PREVIOUSHASH
+		,RAISEDFUND
+		,TIMESTAMP
+		,RECEIV_ID
+		,GIV_ID
+	) VALUES(
+		#{hash}
+		,#{previousHash}
+		,#{raisedFund}
+		,#{timeStamp}
+		,#{receiv_id}
+		,#{giv_id}
+	)
+	</insert>
+	
+	<select id = "selectBlock" resultType = "vo.Block">
+	
+	SELECT
+		HASH
+		,PREVIOUSHASH
+		,RAISEDFUND
+		,TIMESTAMP
+		,GIV_ID
+		,RECEIV_ID
+	FROM
+		BLOCK
+	ORDER BY
+		TIMESTAMP
+		ASC
+		
+	</select>
+	
+	<insert id = "insertInst" parameterType = "vo.Institution">
+	INSERT INTO INSTITUTION
+		(INST_ID, INST_PW, BALANCE)
+	VALUES
+		(#{inst_id}, #{inst_pw}, #{balance})
+	</insert>
+	
+	<insert id = "insertReceiver" parameterType = "vo.Receiver">
+	INSERT INTO RECEIVER
+		(RECEIV_ID, RECEIV_PW, BALANCE, INST_ID)
+	VALUES
+		(#{receiv_id}, #{receiv_pw}, #{balance}, #{inst_id})
+	
+	</insert>
+	
+	<select id = "selectReceiver" resultType = "vo.Receiver">
+	select
+		receiv_id
+		,receiv_pw
+		,balance
+	from
+		RECEIVER
+	</select>
+	
+	<select id = "searchBlock" parameterType = "String" resultType = "vo.Block">
+	
+	SELECT
+		HASH
+		,PREVIOUSHASH
+		,RAISEDFUND
+		,TIMESTAMP
+		,GIV_ID
+		,RECEIV_ID
+	FROM
+		BLOCK
+	WHERE
+		RECEIV_ID = #{receiv_id}
+	ORDER BY
+		TIMESTAMP
+		ASC
+	</select>
+	
+	<select id = "searchGiverBlock" parameterType = "String" resultType = "vo.Block">
+	
+	SELECT
+		HASH
+		,PREVIOUSHASH
+		,RAISEDFUND
+		,TIMESTAMP
+		,GIV_ID
+		,RECEIV_ID
+	FROM
+		BLOCK
+	WHERE
+		GIV_ID = #{giv_id}
+	ORDER BY
+		TIMESTAMP
+		ASC
+	
+	</select>
+	
+	
+	<update id = "subBalance">
+	
+	UPDATE GIVER
+		SET BALANCE = #{balance}
+	WHERE 
+		GIV_ID = #{giv_id}
+	
+	</update>
+	
+	<update id = "endReceiver">
+	
+	UPDATE RECEIVER
+		SET BALANCE = #{balance}
+	WHERE
+		RECEIV_ID = #{receiv_id}
+	
+	</update>
+	
+	<update id = "endInstitution"> 
+	
+	UPDATE INSTITUTION
+		SET BALANCE = BALANCE + #{balance}
+	WHERE
+		INST_ID = #{inst_id}
+	
+	</update>
+	
+	<select id = "receiversOnCampaign" resultType = "String">
+	
+	SELECT DISTINCT
+		RECEIV_ID
+	FROM
+		BLOCK
+	
+	</select>
+	
+	<select id = "selectInstID" parameterType = "String" resultType = "String">
+	
+	SELECT DISTINCT
+		INST_ID
+	FROM
+		RECEIVER
+	WHERE
+		RECEIV_ID = #{receiv_id}
+	
+	</select>
+	
+	<delete id = "endCampaign" parameterType = "String">
+	
+	DELETE BLOCK
+	WHERE RECEIV_ID = #{receiv_id}
+	
+	</delete>
+	
+</mapper>
