@@ -61,6 +61,16 @@
 		(#{inst_id}, #{inst_pw}, #{balance})
 	</insert>
 	
+	<select id = "selectInst" resultType = "vo.Institution">
+	
+	SELECT
+		INST_ID
+		, INST_PW
+	FROM
+		INSTITUTION
+		
+	</select>
+	
 	<insert id = "insertReceiver" parameterType = "vo.Receiver">
 	INSERT INTO RECEIVER
 		(RECEIV_ID, RECEIV_PW, BALANCE, INST_ID)
@@ -70,12 +80,24 @@
 	</insert>
 	
 	<select id = "selectReceiver" resultType = "vo.Receiver">
-	select
-		receiv_id
-		,receiv_pw
-		,balance
-	from
+	
+	SELECT
+		RECEIV_ID
+		, RECEIV_PW
+		, BALANCE
+	FROM
 		RECEIVER
+		
+	</select>
+	
+	<select id = "selectAdmin" resultType = "vo.Admin">
+	
+	SELECT
+		ADMIN_ID
+		, ADMIN_PW
+	FROM
+		ADMIN
+		
 	</select>
 	
 	<select id = "searchBlock" parameterType = "String" resultType = "vo.Block">

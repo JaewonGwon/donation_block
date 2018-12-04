@@ -4,20 +4,20 @@ import java.security.MessageDigest;
 import java.util.Date;
 
 public class Block {
-	public String hash;
-	public String previousHash;
-	public String receiv_id; //어떤 캠페인인지 확인하기 위한 변수
-	public String giv_id; //Transaction의 송금자를 확인하기 위한 변수
-	public int raisedFund; //data
-	public long timeStamp;
+	private String hash;
+	private String previousHash;
+	private String receiv_id; //어떤 캠페인인지 확인하기 위한 변수
+	private String giv_id; //Transaction의 송금자를 확인하기 위한 변수
+	private int raisedFund; //data
+	private long timeStamp;
 	
 	public Block(String previousHash, int raisedFund, String giv_id, String receiv_id) {
 		this.previousHash = previousHash;
 		this.timeStamp = new Date().getTime();
 		this.raisedFund = raisedFund;
-		this.hash = calculateHash();
 		this.receiv_id = receiv_id;
 		this.giv_id = giv_id;
+		this.hash = calculateHash();
 	}
 	
 	public Block() {
@@ -28,7 +28,7 @@ public class Block {
 		String calculatedhash = applySha256(
 				previousHash +
 				Long.toString(timeStamp)
-				+ (raisedFund + "") +
+				+ Integer.toString(raisedFund) +
 				receiv_id + giv_id
 				);
 		return calculatedhash;
@@ -37,7 +37,7 @@ public class Block {
 	public String applySha256(String input) {	// SHA-256 알고리즘으로 String input의 HashCode 생성, String의 형태로 출력.
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hash = digest.digest(input.getBytes("UTF-8"));
+			byte[] hash = digest.digest(input.getBytes("MS949"));
 			StringBuffer hexString = new StringBuffer();
 			for (int i = 0; i < hash.length; i++) {
 				String hex = Integer.toHexString(0xff & hash[i]);

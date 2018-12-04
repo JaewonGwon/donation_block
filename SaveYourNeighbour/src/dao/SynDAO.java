@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import vo.Admin;
 import vo.Block;
 import vo.Giver;
 import vo.Institution;
@@ -306,4 +307,44 @@ public class SynDAO {
 				
 	}
 	
+	public ArrayList<Institution> selectInst() {
+		ArrayList<Institution> iList = new ArrayList<>();
+		
+		SqlSession session = factory.openSession();
+		Mapper mapper = session.getMapper(Mapper.class);
+		
+		try {
+			iList = mapper.selectInst();
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		
+		return iList;
+		
+		
+	}
+	
+	public ArrayList<Admin> selectAdmin() {
+		ArrayList<Admin> admin = new ArrayList<>();
+		
+		SqlSession session = factory.openSession();
+		Mapper mapper = session.getMapper(Mapper.class);
+		
+		try {
+			admin = mapper.selectAdmin();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session!=null) {
+				session.close();
+			}
+		}
+		
+		return admin;
+	}
 }
