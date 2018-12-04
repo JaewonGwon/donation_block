@@ -49,7 +49,6 @@ public class Block {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	public String getHash() {
