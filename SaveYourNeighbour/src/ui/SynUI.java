@@ -40,8 +40,8 @@ public class SynUI {
 	
 	
 	public void startCampaign() {
-		System.out.println("0을 입력하면 생성 취소");
-		System.out.print("대상 클라이언트의 ID : ");
+		System.out.println("0을 입력하면 취소");
+		System.out.print("클라이언트 ID : ");
 		String receiv_id = scl.nextLine();
 		if (receiv_id.equals("0")) {
 			return;
@@ -183,7 +183,7 @@ public class SynUI {
 	public void sendMoney() {
 		int subBalance = 0;
 		boolean available = false; // 대상이 없을 경우 활용할 flag
-		System.out.println("0을 입력하면 취소");
+		System.out.println("0을 입력하면 취소됩니다.");
 		System.out.print("보낼 ID : ");
 		String giv_id = scl.nextLine();
 		if (giv_id.equals("0"))
@@ -201,7 +201,7 @@ public class SynUI {
 			if (available) {
 				int balance = 0;
 				while (true) {
-					System.out.println("보낼 금액 : ");
+					System.out.print("보낼 금액 : ");
 					try {
 						balance = sc.nextInt();
 						if (balance == 0)
@@ -259,10 +259,9 @@ public class SynUI {
 	public void raiseMoney() {
 		int subBalance = 0;
 		boolean available = false; // 대상이 없을 경우 활용할 flag
-		System.out.println("0을 입력하면 취소");
+		System.out.println("0을 입력하면 취소됩니다.");
 		System.out.println("기부하실 클라이언트의 ID를 입력해주세요.");
 		while (true) {
-
 			System.out.print("ID : ");
 			String receiv_id = scl.nextLine();
 			if (receiv_id.equals("0"))
@@ -275,7 +274,7 @@ public class SynUI {
 			if (available) {
 				int balance = 0;
 				while (true) {
-					System.out.println("보낼 금액 : ");
+					System.out.print("보낼 금액 : ");
 					try {
 						balance = sc.nextInt();
 						if (balance == 0)
@@ -557,9 +556,10 @@ public class SynUI {
 		System.out.println("────────────────");
 		System.out.println("1. 강제 송금 ##### ONLY FOR TEST");
 		System.out.println("2. 캠페인 무결성 검사");
-		System.out.println("3. 기부 현황");
-		System.out.println("4. 캠페인 시작");
-		System.out.println("5. 캠페인 종료");
+		System.out.println("3. 기부 현황(전체)");
+		System.out.println("4. 기부 현황(ID)");
+		System.out.println("5. 캠페인 시작");
+		System.out.println("6. 캠페인 종료");
 		System.out.println("9. 로그아웃");
 		System.out.println("0. 프로그램 종료");
 		System.out.println("────────────────");
@@ -574,12 +574,15 @@ public class SynUI {
 			sm.chainValid();
 			break;
 		case 3:
-			showChainStatus();
+			showCampaigns();
 			break;
 		case 4:
-			startCampaign();
+			showChainStatus();
 			break;
 		case 5:
+			startCampaign();
+			break;
+		case 6:
 			endCampaign();
 			break;
 		case 9:
