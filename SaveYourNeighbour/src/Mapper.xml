@@ -4,7 +4,7 @@
 <mapper namespace="dao.Mapper">
 	
 	<insert id = "insertGiver" parameterType = "vo.Giver">
-	insert into Giver
+	INSERT INTO GIVER
 		(GIV_ID, GIV_PW, BALANCE)
 	VALUES
 		(#{giv_id}, #{giv_pw}, #{balance})
@@ -72,10 +72,17 @@
 	</select>
 	
 	<insert id = "insertReceiver" parameterType = "vo.Receiver">
-	INSERT INTO RECEIVER
-		(RECEIV_ID, RECEIV_PW, BALANCE, INST_ID)
-	VALUES
-		(#{receiv_id}, #{receiv_pw}, #{balance}, #{inst_id})
+	INSERT INTO RECEIVER(
+		RECEIV_ID
+		, RECEIV_PW
+		, BALANCE, INST_ID
+		)
+	VALUES(
+		#{receiv_id}
+		, #{receiv_pw}
+		, #{balance}
+		, #{inst_id}
+		)
 	
 	</insert>
 	

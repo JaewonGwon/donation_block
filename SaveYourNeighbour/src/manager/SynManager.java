@@ -273,5 +273,16 @@ public class SynManager {
 		System.out.println("해당하는 정보를 찾을 수 없습니다.");
 		return 0;
 	}
+	
+	public boolean checkValidateNull(String id, String pw) {
+		
+		boolean result = true;
+		
+		if (id.equals("") || pw.equals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) {
+			result = false;
+		}
+		
+		return result;
+	}
 
 }

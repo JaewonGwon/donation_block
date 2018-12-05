@@ -16,10 +16,25 @@ public class SynUI {
 	private Scanner scl = new Scanner(System.in); // Scanner for nextLine()
 	private boolean flag = true;
 	private String loginID;
+	private String login_flag_string = "";
 	SynManager sm = new SynManager();
 
 	public SynUI() {
 		while (flag) {
+			switch (login_flag) {
+			case 1:
+				login_flag_string = "기부자";
+				break;
+			case 2:
+				login_flag_string = "클라이언트";
+				break;
+			case 3:
+				login_flag_string = "기관";
+				break;
+			case 4:
+				login_flag_string = "관리자";
+				break;
+			}
 			if (login_flag == 0) {
 				login();
 			} else if (login_flag == 1) {
@@ -37,14 +52,25 @@ public class SynUI {
 			}
 		}
 	}
-	
-	
+
 	public void startCampaign() {
 		System.out.println("0을 입력하면 취소");
 		System.out.print("클라이언트 ID : ");
 		String receiv_id = scl.nextLine();
 		if (receiv_id.equals("0")) {
 			return;
+		}
+		int cnt = 0;
+		ArrayList<Receiver> tempList = sm.selectReceiver();
+		for (Receiver r : tempList) {
+			if (r.getReceiv_id().equals(receiv_id)) {
+				++cnt;
+			}
+		}
+		if (cnt == 0) {
+			System.out.println("클라이언트가 존재하지 않습니다.");
+			return;
+
 		}
 		int balance = 0;
 		while (true) {
@@ -169,13 +195,15 @@ public class SynUI {
 			int compareBalance = 0;
 			ArrayList<Block> tempChain = sm.searchBlock(s);
 			for (Block b : tempChain) {
-				compareBalance += b.getRaisedFund();
+				compareBalance += b.getRaisedFund(); // compareBalance에 체인에 속해 있는 각 블록에 기록되어 있는 금액을 종합
 			}
 			if ((sm.searchBlock(s).get(0).getRaisedFund() * 2) <= compareBalance) { // 금액을 초과했는지 확인
 				System.out.println(s + "님에 대한 캠페인이 목표를 달성했습니다!");
+				System.out.println(s + "님에게 총 " + (compareBalance - sm.searchBlock(s).get(0).getRaisedFund())
+						+ "HOPE가 모금되었습니다.\n");
 			} else {
 				System.out.println(s + "님에 대한 캠페인은 아직 도움이 더 필요합니다. 앞으로 "
-						+ ((sm.searchBlock(s).get(0).getRaisedFund() * 2) - compareBalance) + "HOPE가 더 필요합니다!");
+						+ ((sm.searchBlock(s).get(0).getRaisedFund() * 2) - compareBalance) + "HOPE가 더 필요합니다!\n");
 			}
 		}
 	}
@@ -325,129 +353,138 @@ public class SynUI {
 		while (flag) {
 			Block b = new Block(); // Block 객체의 SHA-256 메서드 활용을 위해..
 			System.out.println("────────────────");
-			System.out.println(" Save. Your. Neighbour.  S.Y.N  ");
+			System.out.println(" Save. Your. Neighbour.  S.U.N  ");
 			System.out.println("────────────────");
 			System.out.print("ID : ");
 			loginID = scl.nextLine();
 			System.out.print("PW : ");
 			String hashedPW = b.applySha256(scl.nextLine());
-			System.out.println(hashedPW);
-			switch (sm.findLoginType(loginID)) {
-			case 1:
-				Giver g = new Giver(loginID, hashedPW, 0);
-				login_flag = sm.checkValidateGiver(g);
-				if (login_flag != 0) {
-					flag = false;
-				}
-				break;
-			case 2:
-				Receiver r = new Receiver(loginID, hashedPW, 0, "0");
-				login_flag = sm.checkValidateReceiver(r);
-				if (login_flag != 0) {
-					flag = false;
-				}
-				break;
-			case 3:
-				Institution i = new Institution(loginID, hashedPW, 0);
-				login_flag = sm.checkValidateInst(i);
-				if (login_flag != 0) {
-					flag = false;
-				}
-				break;
-			case 4:
-				Admin a = new Admin(loginID, hashedPW);
-				login_flag = sm.checkValidateAdmin(a);
-				if (login_flag != 0) {
-					flag = false;
-				}
-				break;
-			case 0:
-				System.out.println("────────────────");
-				System.out.println("입력하신 값으로 새로운 계정을 만드시겠습니까? (1. 예  2. 아니오)");
-				if (sc.nextInt() == 1) {
-					switch (newAccountTypeMenu()) {
-					case 1:
-						System.out.println("────────────────");
-						System.out.println("비밀번호를 다시 입력해주세요.");
-						System.out.print("PW : ");
-						String checkPWg = b.applySha256(scl.nextLine());
-						if (checkPWg.equals(hashedPW)) {
-							sm.insertGiver(new Giver(loginID, checkPWg, 1000000));
-							System.out.println("가입이 완료되었습니다. 환영합니다!");
-							System.out.println("────────────────");
-							login_flag = 1;
-							flag = false;
-						} else {
-							System.out.println("비밀번호가 맞지 않습니다.");
-						}
-						break;
-					case 2:
-						System.out.println("────────────────");
-						System.out.println("비밀번호를 다시 입력해주세요.");
-						System.out.print("PW : ");
-						String checkPWr = b.applySha256(scl.nextLine());
-						if (checkPWr.equals(hashedPW)) {
-							System.out.println("지원 받고 계신 기관의 ID를 입력해주세요.");
-							String newInstID = scl.nextLine();
-							sm.insertReceiver(new Receiver(loginID, checkPWr, 0, newInstID));
-							System.out.println("가입이 완료되었습니다. 환영합니다!");
-							login_flag = 2;
-							flag = false;
-						} else {
-							System.out.println("비밀번호가 맞지 않습니다.");
-						}
-						break;
-					case 3:
-						System.out.println("────────────────");
-						System.out.println("비밀번호를 다시 입력해주세요.");
-						System.out.print("PW : ");
-						String checkPWi = b.applySha256(scl.nextLine());
-						if (checkPWi.equals(hashedPW)) {
-							sm.insertInst(new Institution(loginID, checkPWi, 0));
-							System.out.println("가입이 완료되었습니다. 환영합니다!");
-							login_flag = 3;
-							flag = false;
-						} else {
-							System.out.println("비밀번호가 맞지 않습니다.");
-						}
-						break;
+//			System.out.println(hashedPW);
+			if (sm.checkValidateNull(loginID, hashedPW)) {
+				switch (sm.findLoginType(loginID)) {
+				case 1:
+					Giver g = new Giver(loginID, hashedPW, 0);
+					login_flag = sm.checkValidateGiver(g);
+					if (login_flag != 0) {
+						flag = false;
 					}
+					break;
+				case 2:
+					Receiver r = new Receiver(loginID, hashedPW, 0, "0");
+					login_flag = sm.checkValidateReceiver(r);
+					if (login_flag != 0) {
+						flag = false;
+					}
+					break;
+				case 3:
+					Institution i = new Institution(loginID, hashedPW, 0);
+					login_flag = sm.checkValidateInst(i);
+					if (login_flag != 0) {
+						flag = false;
+					}
+					break;
+				case 4:
+					Admin a = new Admin(loginID, hashedPW);
+					login_flag = sm.checkValidateAdmin(a);
+					if (login_flag != 0) {
+						flag = false;
+					}
+					break;
+				case 0:
+					System.out.println("────────────────");
+					System.out.println("입력하신 값으로 새로운 계정을 만드시겠습니까? (1. 예  2. 아니오)");
+					if (sc.nextInt() == 1) {
+						switch (newAccountTypeMenu()) {
+						case 1:
+							System.out.println("────────────────");
+							System.out.println("비밀번호를 다시 입력해주세요.");
+							System.out.print("PW : ");
+							String checkPWg = b.applySha256(scl.nextLine());
+							if (checkPWg.equals(hashedPW)) {
+								sm.insertGiver(new Giver(loginID, checkPWg, 1000000));
+								System.out.println("가입이 완료되었습니다. 환영합니다!");
+								System.out.println("────────────────");
+								login_flag = 1;
+								flag = false;
+							} else {
+								System.out.println("비밀번호가 맞지 않습니다.");
+							}
+							break;
+						case 2:
+							System.out.println("────────────────");
+							System.out.println("비밀번호를 다시 입력해주세요.");
+							System.out.print("PW : ");
+							String checkPWr = b.applySha256(scl.nextLine());
+							if (checkPWr.equals(hashedPW)) {
+								System.out.println("지원 받고 계신 기관의 ID를 입력해주세요.");
+								System.out.print("ID : ");
+								String newInstID = scl.nextLine();
+								sm.insertReceiver(new Receiver(loginID, checkPWr, 0, newInstID));
+								System.out.println("가입이 완료되었습니다. 환영합니다!");
+								login_flag = 2;
+								flag = false;
+							} else {
+								System.out.println("비밀번호가 맞지 않습니다.");
+							}
+							break;
+						case 3:
+							System.out.println("────────────────");
+							System.out.println("비밀번호를 다시 입력해주세요.");
+							System.out.print("PW : ");
+							String checkPWi = b.applySha256(scl.nextLine());
+							if (checkPWi.equals(hashedPW)) {
+								sm.insertInst(new Institution(loginID, checkPWi, 0));
+								System.out.println("가입이 완료되었습니다. 환영합니다!");
+								login_flag = 3;
+								flag = false;
+							} else {
+								System.out.println("비밀번호가 맞지 않습니다.");
+							}
+							break;
+						}
+					}
+					break;
+
 				}
-				break;
+
+			} else {
+				System.out.println("ID 또는 패스워드가 입력되지 않았습니다.");
 			}
 		}
 	}
 
 	public int newAccountTypeMenu() {
 		System.out.println("────────────────");
-		System.out.println("원하시는 계정 타입을 선택하세요");
-		System.out.println("1. 기부자   2. 클라이언트   3. 기관");
+		System.out.println("원하시는 계정 타입을 선택하세요 ");
+		System.out.println("1. 기부자 2. 클라이언트 3. 기관 ");
+		System.out.println("────────────────");
+		System.out.print("메뉴를 선택하세요 >> ");
 		return sc.nextInt();
 	}
 
 	public int switcher() {
+		System.out.println(" 회원 정보 : " + login_flag_string);
+		System.out.println(" 로그인 ID : " + loginID);
 		while (true) {
-			System.out.println("회원 정보 : " + login_flag);
-			System.out.println("로그인 ID : " + loginID);
 			try {
-				System.out.print("메뉴를 선택하세요 >> ");
+				System.out.print(" 메뉴를 선택하세요 >> ");
 				return sc.nextInt();
 			} catch (Exception e) {
 				sc.nextLine();
-				System.out.println("잘못 입력되었습니다.");
+				System.out.println(" 잘못 입력되었습니다.");
 			}
 		}
 	}
 
 	public void givMainMenu() {
-		System.out.println("────────────────");
-		System.out.println("1. 기부 하기");
-		System.out.println("2. 기부 현황");
-		System.out.println("3. 계정 확인");
-		System.out.println("4. SYN을 도와주세요! 무결성 검사");
-		System.out.println("9. 로그아웃");
-		System.out.println("0. 프로그램 종료");
-		System.out.println("────────────────");
+		System.out.println("┌────────────────┐");
+		System.out.println("│1. 기부 하기                    │");
+		System.out.println("│2. 기부 현황                    │");
+		System.out.println("│3. 계정 확인                    │");
+		System.out.println("│4. SYN을 도와주세요! 무결성 검사│");
+		System.out.println("│9. 로그아웃                     │");
+		System.out.println("│0. 프로그램 종료                │");
+		System.out.println("└────────────────┘");
 	}
 
 	public void givMenu(int i) {
@@ -466,12 +503,26 @@ public class SynUI {
 			break;
 		case 9:
 			System.out.println("로그아웃 하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int inputLogout = 0;
+			try {
+				inputLogout = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (inputLogout == 1)
 				login_flag = 0;
 			break;
 		case 0:
 			System.out.println("프로그램을 종료하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int input = 0;
+			try {
+				input = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (input == 1)
 				flag = false;
 			break;
 		default:
@@ -481,15 +532,15 @@ public class SynUI {
 	}
 
 	public void recMainMenu() {
-		System.out.println("────────────────");
-		System.out.println("1. 계정 확인");
-		System.out.println("2. 기부 현황");
-		System.out.println("3. SYN을 도와주세요! 무결성 검사");
-		System.out.println("9. 로그아웃");
-		System.out.println("0. 프로그램 종료");
-		System.out.println("────────────────");
+		System.out.println("┌────────────────┐");
+		System.out.println("│1. 계정 확인                    │");
+		System.out.println("│2. 기부 현황                    │");
+		System.out.println("│3. SYN을 도와주세요! 무결성 검사│");
+		System.out.println("│9. 로그아웃                     │");
+		System.out.println("│0. 프로그램 종료                │");
+		System.out.println("└────────────────┘");
 	}
-	
+
 	public void recMenu(int i) {
 		switch (i) {
 		case 1:
@@ -503,12 +554,26 @@ public class SynUI {
 			break;
 		case 9:
 			System.out.println("로그아웃 하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int inputLogout = 0;
+			try {
+				inputLogout = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (inputLogout == 1)
 				login_flag = 0;
 			break;
 		case 0:
 			System.out.println("프로그램을 종료하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int input = 0;
+			try {
+				input = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (input == 1)
 				flag = false;
 			break;
 		default:
@@ -518,14 +583,15 @@ public class SynUI {
 	}
 
 	public void instMainMenu() {
-		System.out.println("────────────────");
-		System.out.println("1. 계정 확인");
-		System.out.println("2. 클라이언트 현황");
-		System.out.println("3. SYN을 도와주세요! 무결성 검사");
-		System.out.println("9. 로그아웃");
-		System.out.println("0. 프로그램 종료");
-		System.out.println("────────────────");
+		System.out.println("┌────────────────┐");
+		System.out.println("│1. 계정 확인                    │");
+		System.out.println("│2. 클라이언트 현황              │");
+		System.out.println("│3. SYN을 도와주세요! 무결성 검사│");
+		System.out.println("│9. 로그아웃                     │");
+		System.out.println("│0. 프로그램 종료                │");
+		System.out.println("└────────────────┘");
 	}
+
 	public void instMenu(int i) {
 		switch (i) {
 		case 1:
@@ -539,12 +605,26 @@ public class SynUI {
 			break;
 		case 9:
 			System.out.println("로그아웃 하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int inputLogout = 0;
+			try {
+				inputLogout = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (inputLogout == 1)
 				login_flag = 0;
 			break;
 		case 0:
 			System.out.println("프로그램을 종료하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int input = 0;
+			try {
+				input = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (input == 1)
 				flag = false;
 			break;
 		default:
@@ -552,19 +632,20 @@ public class SynUI {
 
 		}
 	}
+
 	public void adminMainMenu() {
-		System.out.println("────────────────");
-		System.out.println("1. 강제 송금 ##### ONLY FOR TEST");
-		System.out.println("2. 캠페인 무결성 검사");
-		System.out.println("3. 기부 현황(전체)");
-		System.out.println("4. 기부 현황(ID)");
-		System.out.println("5. 캠페인 시작");
-		System.out.println("6. 캠페인 종료");
-		System.out.println("9. 로그아웃");
-		System.out.println("0. 프로그램 종료");
-		System.out.println("────────────────");
+		System.out.println("┌────────────────┐");
+		System.out.println("│1. 강제 송금 ##### ONLY FOR TEST│");
+		System.out.println("│2. 캠페인 무결성 검사           │");
+		System.out.println("│3. 기부 현황(전체)              │");
+		System.out.println("│4. 기부 현황(ID)                │");
+		System.out.println("│5. 캠페인 시작                  │");
+		System.out.println("│6. 캠페인 종료                  │");
+		System.out.println("│9. 로그아웃                     │");
+		System.out.println("│0. 프로그램 종료                │");
+		System.out.println("└────────────────┘");
 	}
-	
+
 	public void adminMenu(int i) {
 		switch (i) {
 		case 1:
@@ -587,12 +668,26 @@ public class SynUI {
 			break;
 		case 9:
 			System.out.println("로그아웃 하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int inputLogout = 0;
+			try {
+				inputLogout = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (inputLogout == 1)
 				login_flag = 0;
 			break;
 		case 0:
 			System.out.println("프로그램을 종료하시겠습니까? (1. 예   2. 아니오)");
-			if (sc.nextInt() == 1)
+			int input = 0;
+			try {
+				input = sc.nextInt();
+			} catch (Exception e) {
+				System.out.println("잘못 입력하셨습니다.");
+				sc.nextLine();
+			}
+			if (input == 1)
 				flag = false;
 			break;
 		default:
