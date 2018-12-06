@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import dao.SynDAO;
 import vo.Admin;
 import vo.Block;
+import vo.FCamp;
 import vo.Giver;
 import vo.Institution;
 import vo.Receiver;
@@ -17,7 +18,9 @@ public class SynManager {
 	ArrayList<Institution> iList = new ArrayList<>();
 	ArrayList<String> sList = new ArrayList<>();
 	ArrayList<Admin> aList = new ArrayList<>();
-
+	ArrayList<FCamp> fList = new ArrayList<>();
+	
+	
 	public int insertGiver(Giver g) {
 
 		int result = 0;
@@ -275,14 +278,31 @@ public class SynManager {
 	}
 	
 	public boolean checkValidateNull(String id, String pw) {
-		
+		// id 혹은 비밀번호가 공란으로 입력되었는지 확인하는 메소드. pw의 경우 String ""의 해쉬코드값.
 		boolean result = true;
 		
-		if (id.equals("") || pw.equals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) {
+		if (id.equals("") || pw.equals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) { 
 			result = false;
 		}
 		
 		return result;
 	}
+	
+	public ArrayList<FCamp> selectFCamp() {
+		
+		fList = dao.selectFCamp();
+		
+		return fList;
+	}
+	
+	public int insertFCamp(FCamp f) {
+		int result = 0;
+		
+		result = dao.insertFCamp(f);
+		
+		return result;
+	}
+	
+	
 
 }

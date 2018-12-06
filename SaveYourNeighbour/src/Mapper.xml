@@ -199,4 +199,27 @@
 	
 	</delete>
 	
+	<select id = "selectFCamp" resultType = "vo.FCamp">
+	
+	SELECT 
+		FCAMP_ID
+		, RECEIV_ID
+		, RECEIV_BALANCE
+	FROM FCAMP
+	
+	</select>
+	
+	<insert id = "insertFCamp" parameterType = "vo.FCamp">
+	
+	INSERT INTO FCAMP(
+		FCAMP_ID
+		, RECEIV_ID
+		, RECEIV_BALANCE) 
+	VALUES (
+		FCAMP_SEQ.NEXTVAL
+		, #{receiv_id}
+		, #{receiv_balance})
+	
+	</insert>
+	
 </mapper>

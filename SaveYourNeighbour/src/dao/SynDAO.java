@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import vo.Admin;
 import vo.Block;
+import vo.FCamp;
 import vo.Giver;
 import vo.Institution;
 import vo.Receiver;
@@ -346,5 +347,47 @@ public class SynDAO {
 		}
 		
 		return admin;
+	}
+	
+	public ArrayList<FCamp> selectFCamp() {
+		ArrayList<FCamp> fList = new ArrayList<>();
+		
+		SqlSession session = factory.openSession();
+		Mapper mapper = session.getMapper(Mapper.class);
+		
+		try {
+			fList = mapper.selectFCamp();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+				
+			}
+		}
+	
+		return fList;
+	}
+	
+	public int insertFCamp(FCamp f) {
+		int result = 0;
+		
+		SqlSession session = factory.openSession();
+		Mapper mapper = session.getMapper(Mapper.class);
+		
+		try {
+			result = mapper.insertFCamp(f);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+		
+		return result;
 	}
 }
