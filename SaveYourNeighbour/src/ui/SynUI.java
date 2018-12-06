@@ -73,6 +73,7 @@ public class SynUI {
 			return;
 
 		}
+		
 		int balance = 0;
 		while (true) {
 			System.out.print("목표 모금액 : ");
@@ -364,8 +365,12 @@ public class SynUI {
 			System.out.println("────────────────");
 			System.out.print("ID : ");
 			loginID = scl.nextLine();
+			if(sm.rememberNoKorean(loginID) == false) {
+				System.out.println("ID는 영어 소문자 또는 숫자만 입력 가능합니다.");
+			}
 			System.out.print("PW : ");
 			String hashedPW = b.applySha256(scl.nextLine());
+			// 가능하면 PW 변수에 담아 Sha256을 적용하면 좋을텐데(rememberNoKorean 적용 가능), 보안의 위험성은?
 //			System.out.println(hashedPW);
 			if (sm.checkValidateNull(loginID, hashedPW)) {
 				switch (sm.findLoginType(loginID)) {
@@ -418,7 +423,7 @@ public class SynUI {
 							System.out.print("PW : ");
 							String checkPWg = b.applySha256(scl.nextLine());
 							if (checkPWg.equals(hashedPW)) {
-								sm.insertGiver(new Giver(loginID, checkPWg, 1000000));
+								sm.insertGiver(new Giver(loginID, checkPWg, 1000000)); // Test용 초기 입금액
 								System.out.println("가입이 완료되었습니다. 환영합니다!");
 								System.out.println("────────────────");
 								login_flag = 1;
@@ -739,6 +744,4 @@ public class SynUI {
 
 		}
 	}
-	
-	
 }

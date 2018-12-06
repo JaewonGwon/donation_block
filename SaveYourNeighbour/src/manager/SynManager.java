@@ -19,8 +19,7 @@ public class SynManager {
 	ArrayList<String> sList = new ArrayList<>();
 	ArrayList<Admin> aList = new ArrayList<>();
 	ArrayList<FCamp> fList = new ArrayList<>();
-	
-	
+
 	public int insertGiver(Giver g) {
 
 		int result = 0;
@@ -264,9 +263,9 @@ public class SynManager {
 	}
 
 	public int checkValidateAdmin(Admin a) {
-		
+
 		for (Admin admin : selectAdmin()) {
-			if(admin.getAdmin_id().equals(a.getAdmin_id())) {
+			if (admin.getAdmin_id().equals(a.getAdmin_id())) {
 				if (admin.getAdmin_pw().equals(a.getAdmin_pw())) {
 					return 4;
 				}
@@ -276,33 +275,50 @@ public class SynManager {
 		System.out.println("해당하는 정보를 찾을 수 없습니다.");
 		return 0;
 	}
-	
+
 	public boolean checkValidateNull(String id, String pw) {
 		// id 혹은 비밀번호가 공란으로 입력되었는지 확인하는 메소드. pw의 경우 String ""의 해쉬코드값.
 		boolean result = true;
-		
-		if (id.equals("") || pw.equals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) { 
+
+		if (id.equals("") || pw.equals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) {
 			result = false;
 		}
-		
+
 		return result;
 	}
-	
+
 	public ArrayList<FCamp> selectFCamp() {
-		
+
 		fList = dao.selectFCamp();
-		
+
 		return fList;
 	}
-	
+
 	public int insertFCamp(FCamp f) {
 		int result = 0;
-		
+
 		result = dao.insertFCamp(f);
-		
+
 		return result;
 	}
-	
-	
 
+	public boolean rememberNoKorean(String input) {
+
+		char c;
+
+		for (int i = 0; i < input.length(); i++) {
+
+			c = input.charAt(i);
+
+			if (c >= 0x61 && c <= 0x7A) {
+			} else if (c >= 0x30 && c <= 0x39) {
+			} else {
+				return false;
+			}
+
+		}
+
+		return true;
+
+	}
 }
